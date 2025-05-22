@@ -3252,11 +3252,11 @@ body.header_defender_analysis_page #wrapper #main section:first-of-type {
 
 
 #top-portfolio-button {
-    margin-top: 0;         /* Removes any extra space above the button */
-    margin-bottom: 2em;    /* Adjusts space between button and project title */
-    padding-left: 1.75em;     /* Pushes the button text to align with your main content */
-                           /* Adjust '4em' (e.g., 2em, 5em) if you want it more or less indented */
-    text-align: left;      /* Ensures the button stays left-aligned within its paragraph */
+    margin-top: 0;         
+    margin-bottom: 2em;   
+    padding-left: 1.75em;   
+                           
+    text-align: left;      
 }
 
 
@@ -3275,4 +3275,15 @@ pre {
 
 #two h2 {
     margin-bottom: 2em; /* Adjust this value as needed */
+}
+
+
+
+/* Style the h3 (which generates the icon and contains the hidden label) */
+.labeled-icons li h3.icon {
+    margin-top: 0;
+    margin-bottom: 0;
+    display: flex;
+    margin-right: 0.75em; 
+    flex-shrink: 0;
 }
