@@ -3272,3 +3272,7 @@ pre {
     word-wrap: break-word;   
     overflow-x: auto;        
 }
+
+#two h2 {
+    margin-bottom: 2em; /* Adjust this value as needed */
+}
