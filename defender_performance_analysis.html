@@ -185,7 +185,7 @@
                 <strong>Handling Duplicate Player Records & Aggregation:</strong>
                 Players who played for multiple teams in a season had separate
                 data rows; I identified these duplicates and combined their
-                records. For wage data, I implemented conditional logic to sum
+                records. For wage data, I implemented logic to sum
                 wages if players had different salaries from multiple clubs, or
                 kept them consistent if salaries were the same across loan
                 spells.
@@ -212,8 +212,8 @@
             <p>
               This snippet illustrates the core logic used in my web scraping
               scripts to extract structured table data from web pages using
-              Selenium. Similar patterns were applied to collect defensive,
-              passing, and miscellaneous statistics from FBref.
+              Selenium. Similar patterns were applied to collect core defensive,
+              passing, and wage statistics from sources such as FBref.
             </p>
             <pre><code
 ># General Web Scraping Function Example (similar to core_defensive_actions_web_scrapper_script.py)
@@ -268,13 +268,43 @@ def scrape_table_data(url: str, table_id: str, output_path: str):
 #     "stats_defense",
 #     "data/raw/serie_a_defense_stats.csv"
 # )
+
+
+            </code></pre>
+            <h4>SQL Query Example (for joining data)</h4>
+            <p>
+              This SQL query snippet illustrates how different datasets were
+              joined and filtered to create the foundational dataset for
+              analysis, focusing on center-backs with sufficient minutes played:
+            </p>
+            <pre><code
+>-- Example SQL Query
+SELECT
+    p.player_name,
+    p.team,
+    w.yearly_wage_usd,
+    d.tackles_p90,
+    d.interceptions_p90,
+    pm.aerial_duels_won_p90,
+    -- Add more relevant columns as needed
+FROM
+    players_raw_data p
+JOIN
+    wages_cleaned w ON p.player_id = w.player_id
+JOIN
+    defensive_stats_processed d ON p.player_id = d.player_id
+JOIN
+    physical_metrics pm ON p.player_id = pm.player_id
+WHERE
+    p.position = 'CB' -- Filter for Center Backs
+    AND p.minutes_played >= 1140; -- Minimum minutes for reliability (approx. 12 full games)
             </code></pre>
 
             <h4>Text Normalization Snippet (for handling special characters):</h4>
             <p>
               This function was critical for standardizing player names and other
               text fields, removing diacritics and replacing special Unicode
-              characters with their ASCII equivalents. This ensured consistent
+              characters with their ASCII equivalents. This attempted to ensure consistent
               merging of data across different sources and smooth import into
               SQL.
             </p>
@@ -334,7 +364,7 @@ def normalize_text(text: str) -> str:
                 the field.
               </li>
               <li>
-                <strong>Possession Adjustment:</strong> Player statistics were
+                <strong>Possession Adjustment:</strong> Player statistics were lightly
                 adjusted based on their team's average possession percentage.
                 This corrects for the fact that a defender on a low-possession
                 team naturally has more defensive opportunities. For example, a
@@ -349,7 +379,7 @@ def normalize_text(text: str) -> str:
                 onto a common scale (mean of 0, standard deviation of 1),
                 enabling direct comparison across diverse statistical
                 categories. Negative metrics (e.g., errors leading to goal, lost
-                duels) were inverted before standardization so that a higher
+                aerial duels) were inverted before standardization so that a higher
                 z-score consistently indicated better performance.
               </li>
               <li>
@@ -358,7 +388,7 @@ def normalize_text(text: str) -> str:
                 standardized z-scores across a selection of 9 core defensive
                 performance metrics. This approach ensures a player's score
                 represents their overall defensive contribution relative to the
-                league average, where a higher score signifies superior
+                league average, where a higher score signifies an above average 
                 performance.
               </li>
               <li>
@@ -370,34 +400,7 @@ def normalize_text(text: str) -> str:
               </li>
             </ol>
 
-            <h3>SQL Query Example (for joining data)</h3>
-            <p>
-              This SQL query snippet illustrates how different datasets were
-              joined and filtered to create the foundational dataset for
-              analysis, focusing on center-backs with sufficient minutes played:
-            </p>
-            <pre><code
->-- Example SQL Query
-SELECT
-    p.player_name,
-    p.team,
-    w.yearly_wage_usd,
-    d.tackles_p90,
-    d.interceptions_p90,
-    pm.aerial_duels_won_p90,
-    -- Add more relevant columns as needed
-FROM
-    players_raw_data p
-JOIN
-    wages_cleaned w ON p.player_id = w.player_id
-JOIN
-    defensive_stats_processed d ON p.player_id = d.player_id
-JOIN
-    physical_metrics pm ON p.player_id = pm.player_id
-WHERE
-    p.position = 'CB' -- Filter for Center Backs
-    AND p.minutes_played >= 1140; -- Minimum minutes for reliability (approx. 12 full games)
-            </code></pre>
+            
 
             <h3>R Script Snippet (Core Feature Engineering & Scoring)</h3>
             <p>
@@ -462,8 +465,7 @@ final_data <- filtered_cb_specific_stats_zscore %>%
               relative to their cost. The interactive Tableau Public dashboard
               below allows for dynamic exploration of player profiles,
               performance metrics, and value rankings based on the calculated
-              scores. You can filter by team, position, and adjust thresholds to
-              explore different segments of the data.
+              scores.
             </p>
             <p class="tableau-link">
               View full dashboard on
@@ -509,24 +511,25 @@ final_data <- filtered_cb_specific_stats_zscore %>%
                 (web scraping), unicodedata (text normalization).
               </li>
               <li>
+                <strong>Google Sheets:</strong> Initial data review and minor
+                transformations.
+              </li>
+              <li><strong>SQL:</strong> Data extraction, cleaning, and transformation.</li>
+              <li>
                 <strong>R:</strong> Dplyr (data manipulation, feature
                 engineering), ggplot2 (static visualization), plotly
                 (interactive visualization).
               </li>
-              <li><strong>SQL:</strong> Data extraction, cleaning, and transformation.</li>
               <li>
                 <strong>Tableau:</strong> Interactive dashboard creation and
                 visualization.
               </li>
-              <li>
-                <strong>Google Sheets:</strong> Initial data review and minor
-                transformations.
-              </li>
+              
             </ul>
 
             <h2>7. Conclusion & Future Work</h2>
             <p>
-              This project demonstrates an end-to-end analytical
+              This project aimed to demonstrate an end-to-end analytical
               workflow, from raw data to actionable insights and interactive
               visualization. It provides a robust framework for identifying
               efficient defensive talent in football.
@@ -593,7 +596,7 @@ final_data <- filtered_cb_specific_stats_zscore %>%
         </ul>
         <ul class="copyright">
           <li>&copy; 2025 Alex Trill</li>
-          <li>Design: HTML5 UP</li>
+          <!-- <li>Design: HTML5 UP</li> -->
         </ul>
       </div>
     </footer>
